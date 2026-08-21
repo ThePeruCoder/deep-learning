@@ -13,7 +13,7 @@ Perceptron::Perceptron(int input_size,double lr,Activation act){
 double Perceptron::predict(const vector<double>& inputs) {
     double z = bias;
 
-    for(int i =0;i < inputs.size(); i++){
+    for(size_t i =0;i < inputs.size(); i++){
         z += inputs[i] * weights[i];
     }
 
@@ -25,7 +25,7 @@ void Perceptron::train_step(const vector<double>& inputs,double target){
     // Forward Pass
     double z = bias;
 
-    for(int i =0;i < inputs.size(); i++){
+    for(size_t i =0;i < inputs.size(); i++){
         z += inputs[i] * weights[i];
     }
 
@@ -39,7 +39,7 @@ void Perceptron::train_step(const vector<double>& inputs,double target){
     double gradient = (error * activation.derivative(z));
 
     // Update Weights 
-    for(int i =0;i < inputs.size();i++){
+    for(size_t i =0;i < inputs.size();i++){
         weights[i] = weights[i] + (learning_rate * gradient * inputs[i]);
     }
 
