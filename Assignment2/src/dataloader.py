@@ -15,9 +15,9 @@ def load_and_split(file_path):
     return train_data, val_data, test_data
 
 
-def create_label(index, num_samples):
+def create_label(index, num_samples, num_classes):
 
-    labels = np.zeros((num_samples,3))
+    labels = np.zeros((num_samples, num_classes))
 
     labels[:, index] = 1
 
@@ -29,6 +29,8 @@ def load_dataset(class_file_path):
     all_X_train , all_y_train = [],[]
     all_X_val , all_y_val = [],[]
     all_X_test , all_y_test = [],[]
+    
+    num_classes = len(class_file_path)
 
     for index, file_path in enumerate(class_file_path):
         
@@ -36,9 +38,9 @@ def load_dataset(class_file_path):
         train_d , val_d , test_d = load_and_split(file_path)
         
         #Creating labels based on index
-        X_train , y_train = train_d[:, :2], create_label(index,len(train_d))
-        X_val, y_val = val_d[:, :2], create_label(index, len(val_d))
-        X_test, y_test = test_d[:, :2], create_label(index, len(test_d))
+        X_train , y_train = train_d[:, :2], create_label(index,len(train_d),num_classes)
+        X_val, y_val = val_d[:, :2], create_label(index, len(val_d),num_classes)
+        X_test, y_test = test_d[:, :2], create_label(index, len(test_d),num_classes)
 
         all_X_train.append(X_train)
         all_y_train.append(y_train)
@@ -64,15 +66,17 @@ def load_dataset(class_file_path):
     return X_train, y_train , X_val, y_val, X_test, y_test
 
 
-def load_nls_dataset(file_path):
+def load_nls_dataset(file_path, counts):
     #Skipping first line i.e(First 500 examples - class1; next 500 examples - class 2 and the last 1000 examples - class3.)
     data = np.loadtxt(file_path,skiprows = 1)
 
-    class_blocks = [
-        data[:500],     # Class 0
-        data[500:1000], # Class 1
-        data[1000:]     # Class 2
-    ]
+    class_blocks = []
+    start = 0
+    for count in counts:
+        class_blocks.append(data[start:start + count])
+        start += count
+
+    num_classes = len(class_blocks)
 
     all_X_train , all_y_train = [],[]
     all_X_val , all_y_val = [],[]
@@ -88,9 +92,9 @@ def load_nls_dataset(file_path):
         test_d = block[val_end:]
 
         #Creating labels based on index
-        X_train , y_train = train_d[:, :2], create_label(index,len(train_d))
-        X_val, y_val = val_d[:, :2], create_label(index, len(val_d))
-        X_test, y_test = test_d[:, :2], create_label(index, len(test_d))
+        X_train , y_train = train_d[:, :2], create_label(index,len(train_d),num_classes)
+        X_val, y_val = val_d[:, :2], create_label(index, len(val_d),num_classes)
+        X_test, y_test = test_d[:, :2], create_label(index, len(test_d),num_classes)
 
         all_X_train.append(X_train)
         all_y_train.append(y_train)
